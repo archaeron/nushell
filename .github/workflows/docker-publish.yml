@@ -36,8 +36,8 @@ jobs:
     needs: compile
     runs-on: ubuntu-latest
     env:
-      DOCKER_REGISTRY: quay.io/nushell
-      DOCKER_PASSWORD: ${{ secrets.DOCKER_REGISTRY }}
+      DOCKER_REGISTRY: docker.pkg.github.com/archaeron/nushell
+      DOCKER_PASSWORD: ${{ secrets.GITHUB_TOKEN }}
       DOCKER_USER: ${{ secrets.DOCKER_USER }}
     strategy:
       matrix:
