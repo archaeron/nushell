@@ -60,7 +60,7 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - name: Install rust-embedded/cross
-      env: { VERSION: v0.1.16 }
+      env: { VERSION: v0.2.1 }
       run: >-
         wget -nv https://github.com/rust-embedded/cross/releases/download/${VERSION}/cross-${VERSION}-x86_64-unknown-linux-gnu.tar.gz
         -O- | sudo tar xz -C /usr/local/bin/
@@ -76,6 +76,8 @@ jobs:
 
     - name: Copy files to output
       run: |
+        ls target
+        ls target/release
         cp target/release/nu target/release/nu_plugin_* output/${{ matrix.arch }}/
         cp README.build.txt output/${{ matrix.arch }}/README.txt
         cp LICENSE output/${{ matrix.arch }}/LICENSE
