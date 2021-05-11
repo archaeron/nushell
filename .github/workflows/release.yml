@@ -81,7 +81,7 @@ jobs:
         cp LICENSE output/${{ matrix.arch }}/LICENSE
         rm output/${{ matrix.arch }}/*.d
         rm output/${{ matrix.arch }}/nu_plugin_core_*
-        rm output/${{ matrix.arch }}/nu_plugin_extra_*
+        # rm output/${{ matrix.arch }}/nu_plugin_extra_*
 
     - name: Upload artifact
       uses: actions/upload-artifact@v2
