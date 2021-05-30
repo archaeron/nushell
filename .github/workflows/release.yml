@@ -67,7 +67,7 @@ jobs:
     - name: compile for specific target
       env: { arch: '${{ matrix.arch }}' }
       run: |
-        cross build --target ${{ matrix.arch }} --release
+        cross build --target ${{ matrix.arch }} --release --all --features=extra
 
     - name: Create output directory
       run: |
