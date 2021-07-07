@@ -58,8 +58,8 @@ jobs:
       - name: Check out code
         uses: actions/checkout@v2
 
-      - name: Install libxcb libx11
-        run: apk add libxcb # libx11
+      - name: Install libxcb libgcc
+        run: apk add libxcb libgcc
 
       - name: Set up cargo
         uses: actions-rs/toolchain@v1
@@ -97,51 +97,48 @@ jobs:
           path: output/*
 
 
-  linux-musl:
-    name: Build Linux musl
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        arch:
-        - x86_64
-        target:
-        - unknown-linux-musl
-        - unknown-linux-gnu
+  # linux-musl:
+  #   name: Build Linux musl
+  #   runs-on: ubuntu-latest
+  #   strategy:
+  #     matrix:
+  #       target:
+  #       - x86_64-unknown-linux-musl
       
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v2
+  #   steps:
+  #     - name: Checkout
+  #       uses: actions/checkout@v2
 
-      - name: Update Apt package registry
-        run: sudo apt-get update
+  #     - name: Update Apt package registry
+  #       run: sudo apt-get update
 
-      - name: Install binutils-multiarch
-        run: sudo apt-get install binutils-multiarch
+  #     - name: Install binutils-multiarch
+  #       run: sudo apt-get install binutils-multiarch
 
-      - name: tell me
-        run: dpkg-architecture --list
+  #     - name: tell me
+  #       run: dpkg-architecture --list
 
-      - name: Add architecture to apt
-        run: sudo dpkg --add-architecture ${{ matrix.arch }}
+  #     - name: Add architecture to apt
+  #       run: sudo dpkg --add-architecture amd64
 
-      - name: Install libssl-dev libxcb
-        run: sudo apt-get install libssl-dev:${{ matrix.arch }} libxcb-composite0-dev:${{ matrix.arch }}
+  #     - name: Install libssl-dev libxcb
+  #       run: sudo apt-get install libssl-dev:amd64 libxcb-composite0-dev:amd64
 
 
-      - name: Install rust
-        uses: actions-rs/toolchain@v1
-        with:
-          toolchain: stable
-          profile: minimal
-          override: true
-          target: ${{ matrix.arch }}-${{ matrix.target }}
+  #     - name: Install rust
+  #       uses: actions-rs/toolchain@v1
+  #       with:
+  #         toolchain: stable
+  #         profile: minimal
+  #         override: true
+  #         target: ${{ matrix.target }}
 
-      - name: Build target
-        uses: actions-rs/cargo@v1
-        with:
-          use-cross: true
-          command: build
-          args: --release --target ${{ matrix.arch }}-${{ matrix.target }}
+  #     - name: Build target
+  #       uses: actions-rs/cargo@v1
+  #       with:
+  #         use-cross: true
+  #         command: build
+  #         args: --release --target ${{ matrix.target }}
 
     # - name: Install libxcb
     #   run: sudo apt-get install libxcb-composite0-dev
