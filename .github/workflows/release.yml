@@ -58,8 +58,8 @@ jobs:
       - name: Check out code
         uses: actions/checkout@v2
 
-      - name: Install libxcb libgcc
-        run: apk add libxcb libgcc
+      - name: Install build-base libxcb libgcc
+        run: apk add build-base libxcb libgcc
 
       - name: Set up cargo
         uses: actions-rs/toolchain@v1
