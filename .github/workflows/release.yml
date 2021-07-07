@@ -52,6 +52,7 @@ jobs:
 
   linux-musl2:
     name: Build Linux Musl
+    runs-on: ubuntu-latest
     container: alpine:latest
     steps:
       - name: Check out code
