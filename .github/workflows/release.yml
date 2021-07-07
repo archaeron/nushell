@@ -5,50 +5,50 @@ on:
 #     tags: ['[0-9]+.[0-9]+.[0-9]+*']
 
 jobs:
-  linux:
-    name: Build Linux
-    runs-on: ubuntu-latest
-    steps:
-      - name: Check out code
-        uses: actions/checkout@v2
+  # linux:
+  #   name: Build Linux
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - name: Check out code
+  #       uses: actions/checkout@v2
 
-      - name: Install libxcb
-        run: sudo apt-get install libxcb-composite0-dev
+  #     - name: Install libxcb
+  #       run: sudo apt-get install libxcb-composite0-dev
 
-      - name: Set up cargo
-        uses: actions-rs/toolchain@v1
-        with:
-          profile: minimal
-          toolchain: stable
-          override: true
+  #     - name: Set up cargo
+  #       uses: actions-rs/toolchain@v1
+  #       with:
+  #         profile: minimal
+  #         toolchain: stable
+  #         override: true
 
-      - name: Build
-        uses: actions-rs/cargo@v1
-        with:
-          command: build
-          args: --release --all --features=extra
+  #     - name: Build
+  #       uses: actions-rs/cargo@v1
+  #       with:
+  #         command: build
+  #         args: --release --all --features=extra
 
-      - name: Create output directory
-        run: mkdir output
+  #     - name: Create output directory
+  #       run: mkdir output
 
-      - name: Copy files to output
-        run: |
-          cp target/release/nu target/release/nu_plugin_* output/
-          cp README.build.txt output/README.txt
-          cp LICENSE output/LICENSE
-          rm output/*.d
-          rm output/nu_plugin_core_*
-          rm output/nu_plugin_extra_*
+  #     - name: Copy files to output
+  #       run: |
+  #         cp target/release/nu target/release/nu_plugin_* output/
+  #         cp README.build.txt output/README.txt
+  #         cp LICENSE output/LICENSE
+  #         rm output/*.d
+  #         rm output/nu_plugin_core_*
+  #         rm output/nu_plugin_extra_*
 
-      # Note: If OpenSSL changes, this path will need to be updated
-      - name: Copy OpenSSL to output
-        run: cp /usr/lib/x86_64-linux-gnu/libssl.so.1.1 output/
+  #     # Note: If OpenSSL changes, this path will need to be updated
+  #     - name: Copy OpenSSL to output
+  #       run: cp /usr/lib/x86_64-linux-gnu/libssl.so.1.1 output/
 
-      - name: Upload artifact
-        uses: actions/upload-artifact@v2
-        with:
-          name: linux
-          path: output/*
+  #     - name: Upload artifact
+  #       uses: actions/upload-artifact@v2
+  #       with:
+  #         name: linux
+  #         path: output/*
 
   linux-musl2:
     name: Build Linux Musl
@@ -107,7 +107,20 @@ jobs:
       
     steps:
       - name: Checkout
-        uses: actions/checkout@v1
+        uses: actions/checkout@v2
+
+      - name: Update Apt package registry
+        run: sudo apt-get update
+
+      - name: Install binutils-multiarch
+        run: apt-get install binutils-multiarch
+
+      - name: Add architecture to apt
+        run: sudo dpkg --add-architecture ${{ matrix.target }}
+
+      - name: Install libssl-dev libxcb
+        run: sudo apt-get install libssl-dev:${{ matrix.target }} libxcb-composite0-dev:${{ matrix.target }}
+
 
       - name: Install rust
         uses: actions-rs/toolchain@v1
