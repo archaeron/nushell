@@ -135,110 +135,110 @@ jobs:
         name: ${{ matrix.arch }}
         path: output/${{ matrix.arch }}/*
 
-  macos:
-    name: Build macOS
-    runs-on: macos-latest
-    steps:
-      - name: Check out code
-        uses: actions/checkout@v2
+  # macos:
+  #   name: Build macOS
+  #   runs-on: macos-latest
+  #   steps:
+  #     - name: Check out code
+  #       uses: actions/checkout@v2
 
-      - name: Set up cargo
-        uses: actions-rs/toolchain@v1
-        with:
-          profile: minimal
-          toolchain: stable
-          override: true
+  #     - name: Set up cargo
+  #       uses: actions-rs/toolchain@v1
+  #       with:
+  #         profile: minimal
+  #         toolchain: stable
+  #         override: true
 
-      - name: Build
-        uses: actions-rs/cargo@v1
-        with:
-          command: build
-          args: --release --all --features=extra
+  #     - name: Build
+  #       uses: actions-rs/cargo@v1
+  #       with:
+  #         command: build
+  #         args: --release --all --features=extra
 
-      - name: Create output directory
-        run: mkdir output
+  #     - name: Create output directory
+  #       run: mkdir output
 
-      - name: Copy files to output
-        run: |
-          cp target/release/nu target/release/nu_plugin_* output/
-          cp README.build.txt output/README.txt
-          cp LICENSE output/LICENSE
-          rm output/*.d
-          rm output/nu_plugin_core_*
-          rm output/nu_plugin_extra_*
+  #     - name: Copy files to output
+  #       run: |
+  #         cp target/release/nu target/release/nu_plugin_* output/
+  #         cp README.build.txt output/README.txt
+  #         cp LICENSE output/LICENSE
+  #         rm output/*.d
+  #         rm output/nu_plugin_core_*
+  #         rm output/nu_plugin_extra_*
 
-      - name: Upload artifact
-        uses: actions/upload-artifact@v2
-        with:
-          name: macos
-          path: output/*
+  #     - name: Upload artifact
+  #       uses: actions/upload-artifact@v2
+  #       with:
+  #         name: macos
+  #         path: output/*
 
-  windows:
-    name: Build Windows
-    runs-on: windows-latest
-    steps:
-      - name: Check out code
-        uses: actions/checkout@v2
+  # windows:
+  #   name: Build Windows
+  #   runs-on: windows-latest
+  #   steps:
+  #     - name: Check out code
+  #       uses: actions/checkout@v2
 
-      - name: Set up cargo
-        uses: actions-rs/toolchain@v1
-        with:
-          profile: minimal
-          toolchain: stable
-          override: true
+  #     - name: Set up cargo
+  #       uses: actions-rs/toolchain@v1
+  #       with:
+  #         profile: minimal
+  #         toolchain: stable
+  #         override: true
 
-      - name: Add cargo-wix subcommand
-        uses: actions-rs/cargo@v1
-        with:
-          command: install
-          args: cargo-wix
+  #     - name: Add cargo-wix subcommand
+  #       uses: actions-rs/cargo@v1
+  #       with:
+  #         command: install
+  #         args: cargo-wix
 
-      - name: Build
-        uses: actions-rs/cargo@v1
-        with:
-          command: build
-          args: --release --all --features=extra
+  #     - name: Build
+  #       uses: actions-rs/cargo@v1
+  #       with:
+  #         command: build
+  #         args: --release --all --features=extra
 
-      - name: Create output directory
-        run: mkdir output
+  #     - name: Create output directory
+  #       run: mkdir output
 
-      - name: Download Less Binary
-        run: Invoke-WebRequest -Uri "https://github.com/jftuga/less-Windows/releases/download/less-v562.0/less.exe" -OutFile "target\release\less.exe"
+  #     - name: Download Less Binary
+  #       run: Invoke-WebRequest -Uri "https://github.com/jftuga/less-Windows/releases/download/less-v562.0/less.exe" -OutFile "target\release\less.exe"
 
-      - name: Download Less License
-        run: Invoke-WebRequest -Uri "https://raw.githubusercontent.com/jftuga/less-Windows/master/LICENSE" -OutFile "target\release\LICENSE-for-less.txt"
+  #     - name: Download Less License
+  #       run: Invoke-WebRequest -Uri "https://raw.githubusercontent.com/jftuga/less-Windows/master/LICENSE" -OutFile "target\release\LICENSE-for-less.txt"
 
-      - name: Copy files to output
-        run: |
-          cp target\release\nu.exe output\
-          cp LICENSE output\
-          cp target\release\LICENSE-for-less.txt output\
-          rm target\release\nu_plugin_core_*.exe
-          rm target\release\nu_plugin_extra_*.exe
-          cp target\release\nu_plugin_*.exe output\
-          cp README.build.txt output\README.txt
-          cp target\release\less.exe output\
-      # Note: If the version of `less.exe` needs to be changed, update this URL
-      # Similarly, if `less.exe` is checked into the repo, copy from the local path here
-      # moved this stuff down to create wix after we download less
+  #     - name: Copy files to output
+  #       run: |
+  #         cp target\release\nu.exe output\
+  #         cp LICENSE output\
+  #         cp target\release\LICENSE-for-less.txt output\
+  #         rm target\release\nu_plugin_core_*.exe
+  #         rm target\release\nu_plugin_extra_*.exe
+  #         cp target\release\nu_plugin_*.exe output\
+  #         cp README.build.txt output\README.txt
+  #         cp target\release\less.exe output\
+  #     # Note: If the version of `less.exe` needs to be changed, update this URL
+  #     # Similarly, if `less.exe` is checked into the repo, copy from the local path here
+  #     # moved this stuff down to create wix after we download less
 
-      - name: Create msi with wix
-        uses: actions-rs/cargo@v1
-        with:
-          command: wix
-          args: --no-build --nocapture --output target\wix\nushell-windows.msi
+  #     - name: Create msi with wix
+  #       uses: actions-rs/cargo@v1
+  #       with:
+  #         command: wix
+  #         args: --no-build --nocapture --output target\wix\nushell-windows.msi
 
-      - name: Upload installer
-        uses: actions/upload-artifact@v2
-        with:
-          name: windows-installer
-          path: target\wix\nushell-windows.msi
+  #     - name: Upload installer
+  #       uses: actions/upload-artifact@v2
+  #       with:
+  #         name: windows-installer
+  #         path: target\wix\nushell-windows.msi
 
-      - name: Upload zip
-        uses: actions/upload-artifact@v2
-        with:
-          name: windows-zip
-          path: output\*
+  #     - name: Upload zip
+  #       uses: actions/upload-artifact@v2
+  #       with:
+  #         name: windows-zip
+  #         path: output\*
 
   release:
     name: Publish Release
