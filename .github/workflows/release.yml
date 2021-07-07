@@ -101,39 +101,62 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        arch:
+        target:
         - x86_64-unknown-linux-musl
+        - aarch64-unknown-linux-gnu
+      
     steps:
-    - uses: actions/checkout@v2
-    - name: Install rust-embedded/cross
-      env: { VERSION: v0.1.16 }
-      run: >-
-        wget -nv https://github.com/rust-embedded/cross/releases/download/${VERSION}/cross-${VERSION}-x86_64-unknown-linux-gnu.tar.gz
-        -O- | sudo tar xz -C /usr/local/bin/
-    - name: compile for specific target
-      env: { arch: '${{ matrix.arch }}' }
-      run: |
-        cross build --target ${{ matrix.arch }} --release --all --features=extra
+      - name: Checkout
+        uses: actions/checkout@v1
 
-    - name: Create output directory
-      run: |
-        mkdir output
-        mkdir output/${{ matrix.arch }}
+      - name: Install rust
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          profile: minimal
+          override: true
+          target: ${{ matrix.target }}
 
-    - name: Copy files to output
-      run: |
-        cp target/${{ matrix.arch }}/release/nu target/${{ matrix.arch }}/release/nu_plugin_* output/${{ matrix.arch }}/
-        cp README.build.txt output/${{ matrix.arch }}/README.txt
-        cp LICENSE output/${{ matrix.arch }}/LICENSE
-        rm output/${{ matrix.arch }}/*.d
-        rm output/${{ matrix.arch }}/nu_plugin_core_*
-        # rm output/${{ matrix.arch }}/nu_plugin_extra_*
+      - name: Build target
+        uses: actions-rs/cargo@v1
+        with:
+          use-cross: true
+          command: build
+          args: --release --target ${{ matrix.target }}
 
-    - name: Upload artifact
-      uses: actions/upload-artifact@v2
-      with:
-        name: ${{ matrix.arch }}
-        path: output/${{ matrix.arch }}/*
+    # - name: Install libxcb
+    #   run: sudo apt-get install libxcb-composite0-dev
+
+    # - uses: actions/checkout@v2
+    # - name: Install rust-embedded/cross
+    #   env: { VERSION: v0.1.16 }
+    #   run: >-
+    #     wget -nv https://github.com/rust-embedded/cross/releases/download/${VERSION}/cross-${VERSION}-x86_64-unknown-linux-gnu.tar.gz
+    #     -O- | sudo tar xz -C /usr/local/bin/
+    # - name: compile for specific target
+    #   env: { arch: '${{ matrix.arch }}' }
+    #   run: |
+    #     cross build --target ${{ matrix.arch }} --release --all --features=extra
+
+    # - name: Create output directory
+    #   run: |
+    #     mkdir output
+    #     mkdir output/${{ matrix.arch }}
+
+    # - name: Copy files to output
+    #   run: |
+    #     cp target/${{ matrix.arch }}/release/nu target/${{ matrix.arch }}/release/nu_plugin_* output/${{ matrix.arch }}/
+    #     cp README.build.txt output/${{ matrix.arch }}/README.txt
+    #     cp LICENSE output/${{ matrix.arch }}/LICENSE
+    #     rm output/${{ matrix.arch }}/*.d
+    #     rm output/${{ matrix.arch }}/nu_plugin_core_*
+    #     # rm output/${{ matrix.arch }}/nu_plugin_extra_*
+
+    # - name: Upload artifact
+    #   uses: actions/upload-artifact@v2
+    #   with:
+    #     name: ${{ matrix.arch }}
+    #     path: output/${{ matrix.arch }}/*
 
   # macos:
   #   name: Build macOS
