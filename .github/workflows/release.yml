@@ -59,7 +59,7 @@ jobs:
         uses: actions/checkout@v2
 
       - name: Install libxcb libx11
-        run: apk install libxcb libx11
+        run: apk add libxcb # libx11
 
       - name: Set up cargo
         uses: actions-rs/toolchain@v1
@@ -104,7 +104,6 @@ jobs:
       matrix:
         arch:
         - x86_64
-        - aarch64
         target:
         - unknown-linux-musl
         - unknown-linux-gnu
@@ -118,6 +117,9 @@ jobs:
 
       - name: Install binutils-multiarch
         run: sudo apt-get install binutils-multiarch
+
+      - name: tell me
+        run: dpkg-architecture --list
 
       - name: Add architecture to apt
         run: sudo dpkg --add-architecture ${{ matrix.arch }}
